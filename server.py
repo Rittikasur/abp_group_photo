@@ -6,6 +6,7 @@ import numpy as np
 from face_count import *
 from numberprog import *
 from facematch import *
+from docmatch import *
 
 
 app = Flask(__name__)
@@ -93,7 +94,44 @@ def facematch():
     
     return jsonify({"prediction":prediction})
 
+@app.route('/verify_aadhar', methods=['POST'])
+def verify_aadhar():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        json_data = request.get_json()
+        img_url = json_data["image_url"]
+        response = requests.get(img_url)
+        img = Image.open(BytesIO(response.content)).convert('RGB')
+        face_count = check_if_aadhar(img)
+        return jsonify({"doc_state":face_count})
+    else:
+        return "Content type is not supported."
 
+@app.route('/verify_pan', methods=['POST'])
+def verify_pan():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        json_data = request.get_json()
+        img_url = json_data["image_url"]
+        response = requests.get(img_url)
+        img = Image.open(BytesIO(response.content)).convert('RGB')
+        face_count = check_if_pan(img)
+        return jsonify({"doc_state":face_count})
+    else:
+        return "Content type is not supported."
+    
+@app.route('/verify_dl', methods=['POST'])
+def verify_dl():
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        json_data = request.get_json()
+        img_url = json_data["image_url"]
+        response = requests.get(img_url)
+        img = Image.open(BytesIO(response.content)).convert('RGB')
+        face_count = check_if_dl(img)
+        return jsonify({"doc_state":face_count})
+    else:
+        return "Content type is not supported."
 
 if __name__ == '__main__':
     app.run(debug=True)
