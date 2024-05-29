@@ -2,11 +2,11 @@ from flask import Flask, request, jsonify
 from PIL import Image
 import io as pyio
 import numpy as np
-from model import *
-
+from face_count import *
+from numberprog import *
 app = Flask(__name__)
 
-@app.route('/predict', methods=['POST'])
+@app.route('/facecount', methods=['POST'])
 def predict():
     data = request.get_json()
     if 'image_url' not in data:
@@ -19,7 +19,6 @@ def predict():
         response.raise_for_status()
     except requests.RequestException as e:
         return jsonify({"error": f"Failed to fetch image from URL: {str(e)}"}), 400
-    
     try:
         image = Image.open(BytesIO(response.content))
     except Exception as e:
@@ -28,7 +27,32 @@ def predict():
     # Call your ML model here
     prediction = check_face_count(np.array(image))
     
-    return jsonify(prediction)
+    return jsonify({"prediction":prediction})
+
+@app.route('/numbercheck', methods=['POST'])
+def numbercheck():
+    data = request.get_json()
+    if 'image_url' not in data:
+        return jsonify({"error": "No image URL provided"}), 400
+    
+    image_url = data['image_url']
+    
+    try:
+        response = requests.get(image_url)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return jsonify({"error": f"Failed to fetch image from URL: {str(e)}"}), 400
+    try:
+        image = Image.open(BytesIO(response.content))
+    except Exception as e:
+        return jsonify({"error": f"Invalid image: {str(e)}"}), 400
+    
+    # Call your ML model here
+    prediction = pocr(np.array(image))
+    
+    return jsonify({"prediction":prediction})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
