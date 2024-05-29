@@ -1,13 +1,6 @@
-import matplotlib.pyplot as plt
-from PIL import Image
-from skimage.color import rgb2gray
-from skimage.feature import match_descriptors, plot_matches, SIFT
-#import gradio as gr
 import numpy as np
 import insightface
 from insightface.app import FaceAnalysis
-from PIL import Image
-import requests
 from io import BytesIO
 from sklearn.metrics.pairwise import cosine_similarity
 
